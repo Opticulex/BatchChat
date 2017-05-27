@@ -17,20 +17,30 @@ Find the drive you want and go to Properties and enable sharing. Then, from any 
 
 There is a variety of chat commands you can enter directly in chat to perform various actions.
 
+**/open** - Reopens the chat log window if it gets closed.
+
 **/exit** - Exits the chat and broacasts and exit notification to other users.
+
+**/exit -p** - Exits the chat privately without an alert to other users.
 
 **/away** - Marks you as away and allows you to reconnect at any time.
 
 **/name** - Changes the global name of the chat for all users (admin command)
 
-**/open** - Reopens the chat log window if it gets closed.
+**/name -p** - Changes thechat name without notifiying other users.
 
-**/user** - Changes your username while in chat (disabled)
+**/motd** - Changes the chat's MOTD for all users (requires /clear)
 
-**/drive** - Changes the drive letter (highly unreccomended)
-
-**/reset** - Resets the chat to defaults
+**/motd -p** - Changes the chat's MOTD without a notification (requires /clear)
 
 **/clear** - Clears the chat window (and updates motd/name) for all users
 
-**/motd** - Changes the chat's MOTD for all users (requires /clear)
+**/clear -p** - Clears the chat window without notification to other users
+
+**/reset** - Resets the chat to defaults
+
+**/del** - Deletes the chat completely and disconnects all users
+
+**/user** - Changes your username while in chat
+
+**/drive** - Changes the drive letter (highly unreccomended)
