@@ -5,6 +5,7 @@ set build=null
 set status=complete
 set launch_time=%time%
 set launch_date=%date%
+set errnet=0
 cd %cd%
 title BatchChat v%version%
 mode 100, 30
@@ -64,29 +65,43 @@ echo Enter a message or command:
 echo.
 set /p msg=^>
 if "%msg%"=="null" goto msg
-if "%msg%"=="/exit" goto msg_exit
-if "%msg%"=="/away" goto msg_away
-if "%msg%"=="/name" goto msg_name
+:: General Commands
 if "%msg%"=="/open" goto msg_open
-::if "%msg%"=="/user" goto msg_user
-if "%msg%"=="/drive" goto msg_drive
-if "%msg%"=="/reset" goto msg_reset
-if "%msg%"=="/clear" goto msg_clear
+:: Status Commands
+if "%msg%"=="/exit" goto msg_exit
+if "%msg%"=="/exit -p" goto msg_exitp
+if "%msg%"=="/away" goto msg_away
+:: Chat Setup Commands
+if "%msg%"=="/name" goto msg_name
+if "%msg%"=="/name -p" goto msg_namep
 if "%msg%"=="/motd" goto msg_motd
-set message=[%time%] [%user%] %msg%
-echo set message=%message% > %drive%\BatchChat\chat_text\text.bat
+if "%msg%"=="/motd -p" goto msg_motdp
+:: Chat Danger Commands
+if "%msg%"=="/clear" goto msg_clear
+if "%msg%"=="/clear -p" goto msg_clearp
+if "%msg%"=="/reset" goto msg_reset
+if "%msg%"=="/del" goto msg_del
+:: Settings Commands
+if "%msg%"=="/user" goto msg_user
+if "%msg%"=="/drive" goto msg_drive
 cls
 echo Enter a message or command:
 echo.
-echo ^>
+echo Sending message..
+set message=[%time%] [%user%] %msg%
+echo set message=%message% > %drive%\BatchChat\chat_text\text.bat
 ::timeout /t 1 /nobreak >nul
+goto msg
+
+:msg_open
+if exist chat_log.bat start chat_log.bat
+if not exist chat_log.bat goto err_fatal
 goto msg
 
 :msg_exit
 echo set message=[%time%] %user% has left the chat. > %drive%\BatchChat\chat_text\text.bat
+:msg_exitp
 :exit
-cls
-set entry=null
 exit
 
 :msg_away
@@ -113,47 +128,13 @@ set /p cname=^>
 echo set chat_name=%cname%>%drive%\BatchChat\chat_data\settings.bat
 echo set message=[%time%] %user% changed the chat name to '%cname%'. > %drive%\BatchChat\chat_text\text.bat
 goto msg
-
-:msg_open
-if exist chat_log.bat start chat_log.bat
-if not exist chat_log.bat goto err_fatal
-goto msg
-
-:msg_user
+:msg_namep
 cls
-echo Enter a new Username:
+echo Enter a name for the chat:
 echo.
-set oldname=%user%
-set /p uname=^>
-set user=%uname%
-echo set message=[%time%] %oldname% changed names to '%user%'. > %drive%\BatchChat\chat_text\text.bat
-
-:msg_drive
-cls
-set drive=%drive%
-echo Enter the name of the drive:
-echo.
-set /p drive=^>
-del %cd%\BatchChatConfig\config\cfg.bat
-(echo | set /p=set drive=%drive%)>>%cd%\BatchChatConfig\config\cfg.bat
-goto msg
-
-:msg_reset
-call %cd%\BatchChatConfig\config\cfg.bat
-if not exist %drive%\BatchChat md %drive%\BatchChat
-if not exist %drive%\BatchChat\chat_data md %drive%\BatchChat\chat_data
-if not exist %drive%\BatchChat\chat_text md %drive%\BatchChat\chat_text
-echo set message=>%drive%\BatchChat\chat_text\text.bat
-if not exist %drive%\BatchChat\chat_data\settings.bat echo set chat_name=Chat>%drive%\BatchChat\chat_data\settings.bat
-if not exist %drive%\BatchChat\chat_data\motd.bat echo set chat_motd=Welcome to the chat!>%drive%\BatchChat\chat_data\motd.bat
-echo set message=[%time%] %user% reset the chat. > %drive%\BatchChat\chat_text\text.bat
-goto msg
-
-:msg_clear
-echo set message=[%time%] %user% cleared the chat. >> %drive%\BatchChat\chat_text\text.bat
-echo temp > %drive%\BatchChat\chat_data\reset.txt
-timeout /t 1 /nobreak > nul
-del %drive%\BatchChat\chat_data\reset.txt
+set cname=Chat
+set /p cname=^>
+echo set chat_name=%cname%>%drive%\BatchChat\chat_data\settings.bat
 goto msg
 
 :msg_motd
@@ -164,6 +145,63 @@ echo.
 set /p chat_motd=^>
 echo set chat_motd=%chat_motd%>%drive%\BatchChat\chat_data\motd.bat
 echo set message=[%time%] %user% changed the chat MOTD. > %drive%\BatchChat\chat_text\text.bat
+goto msg
+:msg_motdp
+cls
+set chat_motd=%chat_motd%
+echo Enter your MOTD:
+echo.
+set /p chat_motd=^>
+echo set chat_motd=%chat_motd%>%drive%\BatchChat\chat_data\motd.bat
+goto msg
+
+:msg_clear
+echo set message=[%time%] %user% cleared the chat. >> %drive%\BatchChat\chat_text\text.bat
+:msg_clearp
+echo temp > %drive%\BatchChat\chat_data\reset.txt
+timeout /t 1 /nobreak > nul
+del %drive%\BatchChat\chat_data\reset.txt
+goto msg
+
+:msg_reset
+call %cd%\BatchChatConfig\config\cfg.bat
+if not exist %drive%\BatchChat md %drive%\BatchChat
+if not exist %drive%\BatchChat\chat_data md %drive%\BatchChat\chat_data
+if not exist %drive%\BatchChat\chat_text md %drive%\BatchChat\chat_text
+echo set message=>%drive%\BatchChat\chat_text\text.bat
+echo set chat_name=Chat>%drive%\BatchChat\chat_data\settings.bat
+echo set chat_motd=Welcome to the chat!>%drive%\BatchChat\chat_data\motd.bat
+echo set message=[%time%] %user% reset the chat. > %drive%\BatchChat\chat_text\text.bat
+goto msg
+
+:msg_del
+cls
+del %drive%\BatchChat
+goto msg
+:msg_deleted
+cls
+echo You have been disconnected from the chat.
+pause>nul
+exit
+
+:msg_user
+cls
+echo Enter a new Username:
+echo.
+set oldname=%user%
+set /p uname=^>
+set user=%uname%
+echo set message=[%time%] %oldname% changed names to '%user%'. > %drive%\BatchChat\chat_text\text.bat
+goto msg
+
+:msg_drive
+cls
+set drive=%drive%
+echo Enter the name of the drive:
+echo.
+set /p drive=^>
+del %cd%\BatchChatConfig\config\cfg.bat
+(echo | set /p=set drive=%drive%)>>%cd%\BatchChatConfig\config\cfg.bat
 goto msg
 
 :joinset
@@ -206,9 +244,29 @@ pause>nul
 exit
 :err_file001
 cls
-echo Error: An important system file is missing.
-pause>nul
-exit
+echo Enter a message or command:
+echo.
+echo Warning: Could not connect to the chat. Waiting for connection [   ]
+timeout /t 1 /nobreak > nul
+cls
+echo Enter a message or command:
+echo.
+echo Warning: Could not connect to the chat. Waiting for connection [.  ]
+timeout /t 1 /nobreak > nul
+cls
+echo Enter a message or command:
+echo.
+echo Warning: Could not connect to the chat. Waiting for connection [.. ]
+timeout /t 1 /nobreak > nul
+cls
+echo Enter a message or command:
+echo.
+echo Warning: Could not connect to the chat. Waiting for connection [...]
+timeout /t 1 /nobreak > nul
+goto msg
+
+set errnet=0
+goto msg
 :err_file002
 cls
 call :disp
