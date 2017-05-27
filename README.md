@@ -27,7 +27,7 @@ There is a variety of chat commands you can enter directly in chat to perform va
 
 **/name** - Changes the global name of the chat for all users (admin command)
 
-**/name -p** - Changes thechat name without notifiying other users.
+**/name -p** - Changes the chat name without notifiying other users.
 
 **/motd** - Changes the chat's MOTD for all users (requires /clear)
 
