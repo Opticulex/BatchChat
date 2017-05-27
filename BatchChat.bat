@@ -47,11 +47,15 @@ if "%user%"=="/drive" goto joinset
 if "%user%"=="/reset" goto setup
 if "%user%"=="" goto join
 if "%user%"==" " goto join
+title BatchChat - Connecting
 set uname=%user%
-mode 90,10
+mode 100,10
 cls
 echo set message=[%time%] %user% has joined the chat. > %drive%\BatchChat\chat_text\text.bat
+echo. > temp.txt
 start chat_log.bat
+ping 1.1.1.1 -n 1 -w 500 > nul
+del temp.txt
 if not exist chat_log.bat goto err_fatal
 set status=1
 

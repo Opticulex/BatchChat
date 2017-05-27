@@ -1,4 +1,5 @@
 @echo off
+if not exist temp.txt exit
 title BatchChat Log - Connecting..
 color 0f
 set errnet=0
