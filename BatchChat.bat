@@ -1,6 +1,6 @@
 @echo off
 :launch
-set version=0.0.1
+set version=0.0.2
 set build=null
 set status=complete
 set launch_time=%time%
