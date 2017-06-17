@@ -38,7 +38,10 @@ set entry=null
 cls
 set user=null
 call :disp
+echo                                   -= Connecting to chat =-
 if not exist %drive%\BatchChat\ goto err_nochat
+cls
+call :disp
 echo.
 echo                                        -= Username: =-
 set /p user=^>
